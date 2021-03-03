@@ -1,0 +1,40 @@
+# This is an example .goreleaser.yml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod download
+    # you may remove this if you don't need go generate
+#    - go generate ./...
+builds:
+  - binary: go_multiarch
+    id: go_multiarch
+    goos:
+    - linux
+    goarch:
+    - amd64
+    - arm64
+  - binary: go_multiarch_mac
+    id: go_multiarch_mac
+    goos:
+    - darwin
+    goarch:
+    - amd64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+nfpms:
+- maintainer: NamVu <namiops@gmail.com>
+  description: Go Build MultiArch..
+  homepage: https://github.com/namiops
+  license: MIT
+  formats:
+  - deb
+  - apk
