@@ -5,21 +5,49 @@ before:
     # You may remove this if you don't use go modules.
     - go mod download
     # you may remove this if you don't need go generate
-#    - go generate ./...
-builds:
-  - binary: go_multiarch
-    id: go_multiarch
-    goos:
-    - linux
-    goarch:
-    - amd64
-    - arm64
-  - binary: go_multiarch_mac
-    id: go_multiarch_mac
-    goos:
-    - darwin
-    goarch:
-    - amd64
+#- go generate ./...
+archives:
+  -
+    format: binary
+    id: my-archive
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+#builds:
+#  - binary: go_multiarch
+#    id: go_multiarch
+#    goos:
+#    - linux
+#    goarch:
+#    - amd64
+#    - arm64
+#  - binary: go_multiarch_mac
+#    id: go_multiarch_mac
+#    goos:
+#    - darwin
+#    goarch:
+#    - amd64
+dockers:
+- image_templates:
+  - "namiops/go_multiarch:goreleaser-amd64"
+  use_buildx: true
+  dockerfile: Dockerfile
+  build_flag_templates:
+  - "--platform=linux/amd64"
+- image_templates:
+  - "namiops/go_multiarch:goreleaser-arm64v8"
+  use_buildx: true
+  goarch: arm64
+  dockerfile: Dockerfile
+  build_flag_templates:
+  - "--platform=linux/arm64/v8"
+docker_manifests:
+- name_template: namiops/go_multiarch:goreleaser
+  image_templates:
+  - namiops/go_multiarch:goreleaser-amd64
+  - namiops/go_multiarch:goreleaser-arm64v8
+  create_flags:
+  - --insecure
+  push_flags:
+  - --insecure
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -36,5 +64,4 @@ nfpms:
   homepage: https://github.com/namiops
   license: MIT
   formats:
-  - deb
   - apk
