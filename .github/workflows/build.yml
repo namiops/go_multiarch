@@ -11,8 +11,6 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       -
         name: Set up Go
         uses: actions/setup-go@v2
@@ -50,17 +48,12 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      -
-        name: TEST build
-        run: |
-          ls -all ./
-          ls -all dist/
       -
         name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
+          context: .
           push: false
           platforms: linux/amd64,linux/arm64
           tags: namiops/go_multiarch:latest
