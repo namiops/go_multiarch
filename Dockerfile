@@ -1,18 +1,10 @@
-FROM golang:1.15
+FROM scratch
 
 LABEL maintainer="NamiOps <namiops@gmail.com>"
 
-## ADD User
-RUN groupadd -r nami && useradd --no-log-init -m -r -g nami nami
-USER nami
+ARG TARGETARCH
 
-## ADD Source files
-WORKDIR /home/nami/app
-COPY . .
-RUN go mod download
+WORKDIR /app
+COPY dist/go_multiarch_linux_$TARGETARCH/go_multiarch /
 
-## Install to $GOPATH/bin
-RUN go install
-
-ENTRYPOINT $GOPATH/bin/go_multiarch
-EXPOSE 8000
+ENTRYPOINT ["/app/go_multiarch"]
